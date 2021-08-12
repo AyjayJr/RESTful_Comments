@@ -9,43 +9,55 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // An object that represents a db of comments
-const comments = [ 
-  {
-    username: 'Todd',
-    comment: 'That is so funny!'
+const comments = [
+	{
+		id: 1,
+		username: 'Todd',
+		comment: 'That is so funny!'
+	},
+	{
+		id: 2,
+		username: 'Anthony',
+		comment: 'What am I looking at!?'
 
-  },
-  {
-    username: 'Anthony',
-    comment: 'What am I looking at!?'
+	},
+	{
+		id: 3,
+		username: 'Potent',
+		comment: 'Anything is possible.'
 
-  },
-  {
-    username: 'Potent',
-    comment: 'Anything is possible.'
+	},
+	{
+		id: 4,
+		username: 'Richie',
+		comment: 'I am extrememly hungry!'
 
-  },
-  {
-    username: 'Richie',
-    comment: 'I am extrememly hungry!'
-
-  },
+	},
 
 ];
 
 // Our main page for our comments resource
 app.get('/comments', (req, res) => {
-  // Index is a common term used for the main page of a resource
-  // Usually shows all of a certain resource on index
-  res.render('comments/index', { comments });  
+	// Index is a common term used for the main page of a resource
+	// Usually shows all of a certain resource on index
+	res.render('comments/index', { comments });
 })
 
-// Pushes new comment from form on new page to our "database"
+// Pushes new comment from a form on /new to our "database"
 app.post('/comments', (req, res) => {
 	const { username, comment } = req.body;
 	// In the real world this data would be added to a db
 	comments.push({ username, comment });
-	res.send('It worked!');
+	// Redirect sends a get req to page when post is finished
+	res.redirect('/comments');
+})
+
+
+// Show route to view particular comment based on id
+app.get('/comments/:id', (req, res) => {
+	const { id } = req.params;
+	const comment = comments.find(c => c.id === parseInt(id));
+	res.render('comments/show', { comment });
 })
 
 // A form to create a new comment
