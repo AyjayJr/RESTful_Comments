@@ -1,11 +1,13 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const methodOverride = require('method-override'); // Allows us to send patch from forms
 const { v4: uuidv4 } = require('uuid'); // UUID creates unique identifiers
 
 // This line parses any data that comes from a url
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(methodOverride('_method'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -60,22 +62,26 @@ app.post('/comments', (req, res) => {
 
 // Show route to view particular comment based on id
 app.get('/comments/:id', (req, res) => {
-	const { id } = req.params;
-	const comment = comments.find(c => c.id === id);
-	res.render('comments/show', { comment });
+	const { id } = req.params; // pull uuid from request 
+	const comment = comments.find(c => c.id === id); // Find comment with matching id
+	res.render('comments/show', { comment }); 
 })
 
 app.get('/comments/:id/edit', (req, res) => {
+	const { id } = req.params;
 	const comment = comments.find(c => c.id === id);
-	res.rend('comments/edit', { comment });
+	res.render('comments/edit', { comment });
 })
 
 // Patch request is used to partially modify a resource
 // Forms in browser can only send get or post requests
+// We will use method-override to enable this functionality
 app.patch('/comments/:id', (req, res) => {
 	const { id } = req.params;
-	const comment = comments.find(c => c.id === id);
-
+	const newCommentText = req.body.comment;
+	const foundComment = comments.find(c => c.id === id);
+	foundComment.comment = newCommentText;
+	res.redirect('/comments');
 })
 
 app.get('/tacos', (req, res) => {
