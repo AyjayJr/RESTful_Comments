@@ -12,7 +12,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // An object that represents a db of comments
-const comments = [
+let comments = [
 	{
 		id: uuidv4(),
 		username: 'Todd',
@@ -67,6 +67,15 @@ app.get('/comments/:id', (req, res) => {
 	res.render('comments/show', { comment }); 
 })
 
+/// Request to delete a comment
+app.delete('/comments/:id', (req, res) => {
+	const { id } = req.params;
+	comments = comments.filter(c => c.id !== id);
+	// Basically everything other than get req gets redirect
+	res.redirect('/comments'); 
+})
+
+// Request to edit a comment's text
 app.get('/comments/:id/edit', (req, res) => {
 	const { id } = req.params;
 	const comment = comments.find(c => c.id === id);
